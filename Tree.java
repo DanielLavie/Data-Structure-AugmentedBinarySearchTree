@@ -34,7 +34,6 @@ public class Tree {
                 currentNode = currentNode.getRight();
             }
         }
-
         return currentNode;
     }
 
