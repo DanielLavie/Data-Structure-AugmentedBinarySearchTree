@@ -16,6 +16,7 @@ public class Tree {
 
     /**
      * Find the node in the tree with the given key
+     *
      * @param keyToLookUp   The key to look up in the tree
      * @return              A reference to the node with the specific key
      *                      if such node exists, null otherwise
@@ -41,6 +42,7 @@ public class Tree {
 
     /**
      * Insert a given node in it's proper position in the tree, according to it's key
+     *
      * @param newNode A reference to the node to be inserted into this tree
      */
     public void insert(TreeNode newNode) {
@@ -99,8 +101,9 @@ public class Tree {
 
     /**
      * Delete a node from this tree.
-     * This function assumes that a node with the same key exists in the tree.
-     * @param deleteNode The node to be deleted.
+     * This function assumes that this node actually exists in the tree.
+     *
+     * @param deleteNode The node to be deleted
      */
     void delete (TreeNode deleteNode) {
         throw new NotImplementedException();
@@ -109,6 +112,7 @@ public class Tree {
     /**
      * Retrieve the node with the given rank in the tree.
      * rank 1 means the smallest node in the tree.
+     *
      * @param requiredRank The rank to be found in the tree
      * @return A reference to the node with the given rank
      */
@@ -118,7 +122,8 @@ public class Tree {
 
     /**
      * Retrieve the rank of the given tree node.
-     * This function assumes that a node with the same key exists in the tree.
+     * This function assumes that this node actually exists in the tree.
+     *
      * @param requiredNode The node to be searched for it's rank
      * @return The rank of the given node
      */
