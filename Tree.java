@@ -10,7 +10,7 @@ public class Tree {
     /**
      * Construct an empty tree
      */
-    public Tree() {
+    Tree() {
         this.root = null;
     }
 
@@ -21,7 +21,7 @@ public class Tree {
      * @return              A reference to the node with the specific key
      *                      if such node exists, null otherwise
      */
-    public TreeNode find(double keyToLookUp) {
+    TreeNode find(double keyToLookUp) {
 
         if (isEmpty()) {
             return null;
@@ -45,7 +45,7 @@ public class Tree {
      *
      * @param newNode A reference to the node to be inserted into this tree
      */
-    public void insert(TreeNode newNode) {
+    void insert(TreeNode newNode) {
 
         if (null == newNode) {
             throw new RuntimeException("Please insert a valid tree node");
@@ -96,6 +96,7 @@ public class Tree {
             }
 
             nodeIterator = nodeIterator.getParent();
+            ++currentHeight;
         }
     }
 
@@ -106,7 +107,120 @@ public class Tree {
      * @param deleteNode The node to be deleted
      */
     void delete (TreeNode deleteNode) {
-        throw new NotImplementedException();
+
+        // Check if the given node has two child's, to decide if the
+        // successor should be found
+        TreeNode referenceNode;
+        if (hasAtMostOneChild(deleteNode)) {
+            referenceNode = deleteNode;
+        }
+        else {
+            referenceNode = findSuccessor(deleteNode);
+        }
+
+        // At this point, reference node should have at most 1 child
+        TreeNode referenceNodeChild;
+        if (null != referenceNode.getLeft()) {
+            referenceNodeChild = referenceNode.getLeft();
+        }
+        else {
+            referenceNodeChild = referenceNode.getRight();
+        }
+
+        // Set the child node parent to the old parent of reference node
+        if (null != referenceNodeChild) {
+            referenceNodeChild.setParent(referenceNode.getParent());
+        }
+
+        // Handle the case we deleted the last node in the tree
+        if (null == referenceNode.getParent()) {
+            root = referenceNodeChild;
+        }
+        // Check if reference node is left or right child of it's parent
+        else if (referenceNode == referenceNode.getParent().getLeft()) {
+            referenceNode.getParent().setLeft(referenceNodeChild);
+        }
+        else {
+            referenceNode.getParent().setRight(referenceNodeChild);
+        }
+
+        // Check if we need to update the node key after swapping
+        if (referenceNode != deleteNode) {
+            deleteNode.setKey(referenceNode.getKey());
+        }
+
+        // Update tree size and height according to the deletion
+        TreeNode nodeIterator = referenceNode.getParent();
+        int heightCounter = referenceNode.getHeight();
+        while (null != nodeIterator) {
+
+            if (hasAtMostOneChild(nodeIterator)) {
+                nodeIterator.setHeight(nodeIterator.getHeight() - 1);
+            }
+
+            else if (nodeIterator.getOtherChild(referenceNode).getHeight() <
+                    heightCounter) {
+                nodeIterator.setHeight(nodeIterator.getHeight() - 1);
+            }
+
+            nodeIterator.setSize(nodeIterator.getSize() - 1);
+
+            referenceNode = nodeIterator;
+            nodeIterator = nodeIterator.getParent();
+            ++heightCounter;
+        }
+    }
+
+    /**
+     * @return True if node has at most one child, false otherwise
+     */
+    private boolean hasAtMostOneChild(TreeNode node) {
+        return (null == node.getLeft() || null == node.getRight());
+    }
+
+    /**
+     * Returns the successor of the given node.
+     * This function assumes that the given node is in the tree.
+     *
+     * @param node A reference to a node in the tree, The successor will be
+     *             found according to these node.
+     * @return A reference to the successor node
+     */
+    private TreeNode findSuccessor(TreeNode node) {
+
+        if (null != node.getRight()) {
+
+            // In case we need to find the minimum node in the right sub-tree,
+            return getMinimumNode(node.getRight());
+        }
+        else {
+
+            // In case we need to find the lowest ancestor of node
+            // whose left sub-tree contains node
+
+            TreeNode nodeParent = node.getParent();
+            while (null != nodeParent &&
+                    null != nodeParent.getRight() &&
+                    node == nodeParent.getRight()) {
+                node = nodeParent;
+                nodeParent = nodeParent.getParent();
+            }
+            return nodeParent;
+        }
+    }
+
+    /**
+     * Returns the minimum node in the tree.
+     *
+     * @param node The root of the tree to searched
+     * @return A refrence to the minimum node
+     */
+    private TreeNode getMinimumNode(TreeNode node) {
+
+        while (null != node.getLeft()) {
+            node = node.getLeft();
+        }
+        return node;
     }
 
     /**
