@@ -16,51 +16,64 @@ class TreeNode {
         this.key = key;
     }
 
-    public double getKey() {
+    double getKey() {
         return key;
     }
 
-    public void setKey(double key) {
+    void setKey(double key) {
         this.key = key;
     }
 
-    public TreeNode getLeft() {
+    TreeNode getLeft() {
         return left;
     }
 
-    public void setLeft(TreeNode left) {
+    void setLeft(TreeNode left) {
         this.left = left;
     }
 
-    public TreeNode getRight() {
+    TreeNode getRight() {
         return right;
     }
 
-    public void setRight(TreeNode right) {
+    void setRight(TreeNode right) {
         this.right = right;
     }
 
-    public TreeNode getParent() {
+    TreeNode getParent() {
         return parent;
     }
 
-    public void setParent(TreeNode parent) {
+    void setParent(TreeNode parent) {
         this.parent = parent;
     }
 
-    public int getSize() {
+    int getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    void setSize(int size) {
         this.size = size;
     }
 
-    public int getHeight() {
+    int getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
+    void setHeight(int height) {
         this.height = height;
+    }
+
+    /**
+     * Retrieve the other child of the given node
+     * @param child The child not be retrieved, i.e. this child
+     *              is checked against the parent to find the other child
+     * @return A reference to the other child
+     */
+    TreeNode getOtherChild(TreeNode child) {
+        if (getLeft() == child) {
+            return getRight();
+        }
+        return getLeft();
     }
 }
