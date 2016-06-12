@@ -224,14 +224,35 @@ public class Tree {
     }
 
     /**
+     * A helper function for OSSelect to retrieve the node with the given rank in the tree.
+     * rank 1 means the smallest node in the tree.
+     *
+     * @param requiredRank The rank to be found in the tree
+     * @param node The current node to check
+     * @return A reference to the node with the given rank
+     */
+    private TreeNode OSSelect(int requiredRank, TreeNode node) {
+        int r = node.getLeft().getSize() + 1;
+        if (requiredRank == r) {
+            return node;
+        }
+        else if (requiredRank < r) {
+            return OSSelect(requiredRank, node.getLeft());
+        }
+        else {
+            return OSSelect(requiredRank - r, node.getRight());
+        }
+    }
+
+    /**
      * Retrieve the node with the given rank in the tree.
      * rank 1 means the smallest node in the tree.
      *
      * @param requiredRank The rank to be found in the tree
      * @return A reference to the node with the given rank
      */
-    TreeNode OSSelect (int requiredRank) {
-        throw new NotImplementedException();
+    public TreeNode OSSelect(int requiredRank) {
+        return OSSelect(requiredRank, root);
     }
 
     /**
@@ -241,8 +262,16 @@ public class Tree {
      * @param requiredNode The node to be searched for it's rank
      * @return The rank of the given node
      */
-    int OSRank (TreeNode requiredNode) {
-        throw new NotImplementedException();
+    public int OSRank(TreeNode requiredNode) {
+        int r = requiredNode.getLeft().getSize() + 1;
+        TreeNode current = requiredNode;
+        while (current != root) {
+            if (current == current.getParent().getRight()) {
+                r = r + current.getLeft().getSize() + 1;
+            }
+            current = current.getParent();
+        }
+        return r;
     }
 
     /**
@@ -253,8 +282,13 @@ public class Tree {
      * @param node The root of the sub tree to be checked for balance
      * @return True if the sub tree is balanced, false otherwise
      */
-    boolean isBalanced (TreeNode node) {
-        throw new NotImplementedException();
+    public boolean isBalanced(TreeNode node) {
+        if (isEmpty()) {
+            return true;
+        }
+
+        return isBalanced(node.getLeft()) && isBalanced(node.getRight())
+                && Math.abs(node.getLeft().getHeight() - node.getRight().getHeight()) <= (2 * Math.log(node.getSize()));
     }
 
     /**
