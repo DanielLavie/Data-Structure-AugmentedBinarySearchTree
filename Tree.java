@@ -232,15 +232,25 @@ public class Tree {
      * @return A reference to the node with the given rank
      */
     private TreeNode OSSelect(int requiredRank, TreeNode node) {
-        int r = node.getLeft().getSize() + 1;
-        if (requiredRank == r) {
+        if (node == null) return null;
+
+        int rank;
+        if (node.getLeft() != null) {
+            rank = node.getLeft().getSize() + 1;
+        }
+        else {
+            rank = 0;
+        }
+
+
+        if (requiredRank == rank) {
             return node;
         }
-        else if (requiredRank < r) {
+        else if (requiredRank < rank) {
             return OSSelect(requiredRank, node.getLeft());
         }
         else {
-            return OSSelect(requiredRank - r, node.getRight());
+            return OSSelect(requiredRank - rank, node.getRight());
         }
     }
 
@@ -263,15 +273,54 @@ public class Tree {
      * @return The rank of the given node
      */
     public int OSRank(TreeNode requiredNode) {
-        int r = requiredNode.getLeft().getSize() + 1;
+        int rank;
+        if (requiredNode.getLeft() != null) {
+            rank = requiredNode.getLeft().getSize() + 1;
+        }
+        else {
+            rank = 0;
+        }
+
         TreeNode current = requiredNode;
         while (current != root) {
             if (current == current.getParent().getRight()) {
-                r = r + current.getLeft().getSize() + 1;
+                rank = rank + current.getLeft().getSize() + 1;
             }
             current = current.getParent();
         }
-        return r;
+        return rank;
+    }
+
+    /**
+     * Helper function that calculates balance with heights.
+     *
+     * @param currentNode The root of the sub tree to be checked for balance
+     * @return True if the sub tree is balanced, false otherwise
+     */
+    private int checkBalance(TreeNode currentNode)
+    {
+        if (currentNode == null)
+        {
+            return 0;
+        }
+
+        // Check if left sub-tree is balanced
+        int leftSubtreeHeight = checkBalance(currentNode.getLeft());
+        if (leftSubtreeHeight == -1) return -1;
+
+        // Check if right sub-tree is balanced
+        int rightSubtreeHeight = checkBalance(currentNode.getRight());
+        if (rightSubtreeHeight == -1) return -1;
+
+        // If both sub-trees are balanced, check the difference of heights
+        // should be less than or equal to 2logN
+        if (Math.abs(leftSubtreeHeight - rightSubtreeHeight) > 2 * Math.log(currentNode.getSize()))
+        {
+            return -1;
+        }
+
+        // If tree rooted at this node is balanced, return height.
+        return (Math.max(leftSubtreeHeight, rightSubtreeHeight) + 1);
     }
 
     /**
@@ -283,12 +332,7 @@ public class Tree {
      * @return True if the sub tree is balanced, false otherwise
      */
     public boolean isBalanced(TreeNode node) {
-        if (isEmpty()) {
-            return true;
-        }
-
-        return isBalanced(node.getLeft()) && isBalanced(node.getRight())
-                && Math.abs(node.getLeft().getHeight() - node.getRight().getHeight()) <= (2 * Math.log(node.getSize()));
+        return checkBalance(node) > 0;
     }
 
     /**
