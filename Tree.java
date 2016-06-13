@@ -63,6 +63,12 @@ public class Tree {
 
         while (null != nodeIterator) {
             newNodeParent = nodeIterator;
+
+            // Only one node with the same value can exist. Return.
+            if (newNode.getKey() == nodeIterator.getKey()) {
+                return;
+            }
+
             if (newNode.getKey() < nodeIterator.getKey()) {
                 nodeIterator = nodeIterator.getLeft();
             }
@@ -107,6 +113,9 @@ public class Tree {
      * @param deleteNode The node to be deleted
      */
     void delete (TreeNode deleteNode) {
+        // Node is null, nothing to do.
+        if (deleteNode == null)
+            return;
 
         // Check if the given node has two child's, to decide if the
         // successor should be found
