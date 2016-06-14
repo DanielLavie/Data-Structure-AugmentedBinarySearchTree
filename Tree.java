@@ -1,9 +1,7 @@
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 /**
  * This class represents an augmented binary search tree
  */
-public class Tree {
+class Tree {
 
     private TreeNode root;
 
@@ -53,16 +51,27 @@ public class Tree {
 
         if (isEmpty()) {
             root = newNode;
+
+            // Reset root node members
+            root.setHeight(0);
+            root.setSize(1);
+
             return;
         }
 
-        // Find the correct place to insert the mew node
+        // Find the correct place to insert the new node
 
         TreeNode newNodeParent = null;
         TreeNode nodeIterator = root;
 
         while (null != nodeIterator) {
             newNodeParent = nodeIterator;
+
+            // Only one node with the same value can exist. Return.
+            if (newNode.getKey() == nodeIterator.getKey()) {
+                return;
+            }
+
             if (newNode.getKey() < nodeIterator.getKey()) {
                 nodeIterator = nodeIterator.getLeft();
             }
@@ -107,6 +116,9 @@ public class Tree {
      * @param deleteNode The node to be deleted
      */
     void delete (TreeNode deleteNode) {
+        // Node is null, nothing to do.
+        if (deleteNode == null)
+            return;
 
         // Check if the given node has two child's, to decide if the
         // successor should be found
@@ -213,7 +225,7 @@ public class Tree {
      * Returns the minimum node in the tree.
      *
      * @param node The root of the tree to searched
-     * @return A refrence to the minimum node
+     * @return A reference to the minimum node
      */
     private TreeNode getMinimumNode(TreeNode node) {
 
@@ -224,14 +236,44 @@ public class Tree {
     }
 
     /**
+     * A helper function for OSSelect to retrieve the node with the given rank in the tree.
+     * rank 1 means the smallest node in the tree.
+     *
+     * @param requiredRank The rank to be found in the tree
+     * @param node The current node to check
+     * @return A reference to the node with the given rank
+     */
+    private TreeNode OSSelect(int requiredRank, TreeNode node) {
+        if (node == null) return null;
+
+        int rank;
+        if (node.getLeft() != null) {
+            rank = node.getLeft().getSize() + 1;
+        }
+        else {
+            rank = 1;
+        }
+
+        if (requiredRank == rank) {
+            return node;
+        }
+        else if (requiredRank < rank) {
+            return OSSelect(requiredRank, node.getLeft());
+        }
+        else {
+            return OSSelect(requiredRank - rank, node.getRight());
+        }
+    }
+
+    /**
      * Retrieve the node with the given rank in the tree.
      * rank 1 means the smallest node in the tree.
      *
      * @param requiredRank The rank to be found in the tree
      * @return A reference to the node with the given rank
      */
-    TreeNode OSSelect (int requiredRank) {
-        throw new NotImplementedException();
+    TreeNode OSSelect(int requiredRank) {
+        return OSSelect(requiredRank, root);
     }
 
     /**
@@ -241,8 +283,31 @@ public class Tree {
      * @param requiredNode The node to be searched for it's rank
      * @return The rank of the given node
      */
-    int OSRank (TreeNode requiredNode) {
-        throw new NotImplementedException();
+    int OSRank(TreeNode requiredNode) {
+        int rank;
+        if (requiredNode.getLeft() != null) {
+            rank = requiredNode.getLeft().getSize() + 1;
+        }
+        else {
+            rank = 1;
+        }
+
+        TreeNode current = requiredNode;
+        while (current != root) {
+            if (current == current.getParent().getRight()) {
+                TreeNode parentLeftChild = current.getParent().getLeft();
+                if (null == parentLeftChild) {
+                    // In case the parent does not have a left child
+                    // consider only the parent
+                    ++rank;
+                }
+                else {
+                    rank = rank + parentLeftChild.getSize() + 1;
+                }
+            }
+            current = current.getParent();
+        }
+        return rank;
     }
 
     /**
@@ -253,8 +318,9 @@ public class Tree {
      * @param node The root of the sub tree to be checked for balance
      * @return True if the sub tree is balanced, false otherwise
      */
-    boolean isBalanced (TreeNode node) {
-        throw new NotImplementedException();
+    boolean isBalanced(TreeNode node) {
+        return node.getHeight() <=
+                2*(Math.log10(node.getSize()) / Math.log10(2));
     }
 
     /**
